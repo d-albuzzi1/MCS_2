@@ -60,6 +60,13 @@ def benchmark_dct2():
 
         print(f"N={N}: slow={elapsed_slow:.4f}s, fast={elapsed_fast:.4f}s")
 
+    # Curve teoriche per confronto
+    Ns_np = np.array(Ns, dtype=np.float64)
+
+    # Normalizza le curve teoriche per renderle confrontabili
+    curve_n3 = (Ns_np ** 3) / (Ns_np[0] ** 3) * times_slow[0]
+    curve_n2logn = (Ns_np ** 2 * np.log2(Ns_np)) / (Ns_np[0] ** 2 * np.log2(Ns_np[0])) * times_fast[0]
+
     # Crea la cartella results se non esiste
     os.makedirs("results", exist_ok=True)
 
@@ -74,11 +81,14 @@ def benchmark_dct2():
     plt.figure(figsize=(8, 6))
     plt.semilogy(Ns, times_slow, 'o-', label='DCT2 lenta (O(N³))')
     plt.semilogy(Ns, times_fast, 's-', label='DCT2 veloce (O(N² logN))')
+    plt.semilogy(Ns, curve_n3, 'yo-', label='O(N³) teorico')
+    plt.semilogy(Ns, curve_n2logn, 'go-', label='O(N² logN) teorico')
+
     plt.xlabel("Dimensione matrice N")
     plt.ylabel("Tempo di esecuzione (s)")
     plt.title("Confronto DCT2 lenta vs veloce")
     plt.legend()
-    plt.grid(True, which="both", linestyle="--")
+    plt.grid(False)
     plt.tight_layout()
 
     # Salva il grafico come immagine
@@ -89,6 +99,7 @@ def benchmark_dct2():
 if __name__ == "__main__":
 
     os.makedirs("results", exist_ok=True)
+
 
     print("========== TEST DI ACCURATEZZA ==========")
     print("Input (prima riga del blocco):")
